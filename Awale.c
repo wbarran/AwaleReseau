@@ -16,7 +16,7 @@ void printBoard(const int *board)
 {
     printf("\nAwale\n");
     // board line one
-    for (int i = 12; i > 5; i--)
+    for (int i = 11; i > 5; i--)
     {
         printf(" %2d ", board[i]);
     }
@@ -27,6 +27,10 @@ void printBoard(const int *board)
     {
         printf(" %2d ", board[i]);
     }
+
+    printf("\n");
+    printf("  A   B   C   D   E   F");
+    printf("\n");
 }
 
 int playMove(Awale *jeu, int houseIndex)
