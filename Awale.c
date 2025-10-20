@@ -1,7 +1,7 @@
 #include "Awale.h" // Inclure le header correspondant
 #include <math.h>  // Autres bibliothèques nécessaires
 
-void initializeGame(Awale *g)
+void initializeBoard(Awale *g)
 {
     for (int i = 0; i < HOUSE_PER_PLAYER * 2; i++)
     {

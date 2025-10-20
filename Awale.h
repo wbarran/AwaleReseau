@@ -18,7 +18,7 @@ typedef struct
 } Awale;
 
 // --- Prototypes de fonctions ---
-void initializeGame(Awale *g);
+void initializeBoard(Awale *g);
 void printBoard(const int *b);
 int playMove(Awale *jeu, int houseIndex);
 int endGame(const Awale *jeu);
