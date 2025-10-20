@@ -20,7 +20,7 @@ typedef struct
 // --- Prototypes de fonctions ---
 void initializeGame(Awale *g);
 void printBoard(const int *b);
-int playMove(Awale *jeu, int caseIndex);
+int playMove(Awale *jeu, int houseIndex);
 int endGame(const Awale *jeu);
 
 #endif // AWALE_H

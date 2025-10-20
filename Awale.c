@@ -11,3 +11,35 @@ void initializeGame(Awale *g)
     g->score2 = 0;
     g->currentPlayer = 1;
 }
+
+void printBoard(const int *board)
+{
+    printf("\nAwale\n");
+    // board line one
+    for (int i = 12; i > 5; i--)
+    {
+        printf(" %2d ", board[i]);
+    }
+
+    printf("\n");
+
+    for (int i = 0; i < 6; i++)
+    {
+        printf(" %2d ", board[i]);
+    }
+}
+
+int playMove(Awale *jeu, int houseIndex)
+{
+    // Adding one seed in the houses after the one selected
+    int seedNumber = jeu->board[houseIndex];
+    jeu->board[houseIndex] = 0;
+    int currentHouse = (houseIndex + 1) % (HOUSE_PER_PLAYER * 2);
+    for (int i = 1; i <= seedNumber; i++)
+    {
+        jeu->board[currentHouse]++;
+        currentHouse = (currentHouse + 1) % (HOUSE_PER_PLAYER * 2);
+    }
+
+    // TODO : Update the score
+}

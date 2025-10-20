@@ -5,14 +5,14 @@ int main()
 {
     Awale game;
     initializeBoard(&game);
-    printBoard(game);
+    printBoard(game.board);
 
     printf("\n--- TESTS ---\n");
-    jouerCoup(&game, 2);
-    printBoard(game);
+    playMove(&game, 2);
+    printBoard(game.board);
 
-    jouerCoup(&game, 8);
-    printBoard(game);
+    playMove(&game, 8);
+    printBoard(game.board);
 
     return 0;
 }
