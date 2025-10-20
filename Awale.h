@@ -11,13 +11,16 @@
 // --- Déclarations de types ou structures ---
 typedef struct
 {
-    int *board;
+    int board[HOUSE_PER_PLAYER * 2];
     int score1;
     int score2;
-} Game;
+    int currentPlayer; // 1 or 2
+} Awale;
 
 // --- Prototypes de fonctions ---
-void initializeBoard(Game *g);
-void printBoard(const Game g);
+void initializeGame(Awale *g);
+void printBoard(const int *b);
+int playMove(Awale *jeu, int caseIndex);
+int endGame(const Awale *jeu);
 
 #endif // AWALE_H
