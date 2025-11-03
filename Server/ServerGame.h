@@ -11,6 +11,6 @@
 #include "client2.h"
 #include "../Awale.h"
 
-void playGame(Client *player1, Client *player2);
+void playGame(Client *player1, Client *player2, Client *spectators, int nbSpectators);
 
 #endif
