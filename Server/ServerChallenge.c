@@ -43,6 +43,9 @@ void acceptChallenge(Client *clients, Client accepter, int actual, const char* f
                      "You accepted %s’s invitation.  The game will now begin !\n", fromName);
             write_client(accepter.sock, message);
 
+            Client spectators[0];
+            playGame(&accepter, &clients[j], spectators, 0);
+
             found = 1;
             break;
         }

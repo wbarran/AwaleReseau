@@ -9,6 +9,7 @@
 
 #include "server2.h"
 #include "client2.h"
+#include "ServerGame.h"
 
 void challengeUser(Client *clients, Client sender, int actual, const char *targetName);
 void acceptChallenge(Client *clients, Client accepter, int actual, const char* fromName);
