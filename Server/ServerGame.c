@@ -4,7 +4,7 @@ void playGame(Client *player1, Client *player2, Client *spectators, int nbSpecta
 {
     Awale game;
     initializeBoard(&game);
-    char *start[32] = (game.currentPlayer == 1) ? player1->name : player2->name;
+    char *start = (game.currentPlayer == 1) ? player1->name : player2->name;
     char buffer[100] = "Welcome to your Awale game, starting player : ";
     strcat(buffer, start);
     write_client(player1->sock, buffer);
@@ -22,42 +22,49 @@ void playGame(Client *player1, Client *player2, Client *spectators, int nbSpecta
         SOCKET currentPlayer = (game.currentPlayer == 1) ? player1->sock : player2->sock;
         write_client(currentPlayer, "It is your turn to play, pick a house please (from A to F)");
         char response;
-        int house;
-        switch (response)
+        int house = -1;
+        while (house == -1)
         {
-        case 'A':
-            house = (game.currentPlayer == 1) ? 0 : 6;
-            break;
-        case 'B':
-            house = (game.currentPlayer == 1) ? 1 : 7;
-            break;
-        case 'C':
-            house = (game.currentPlayer == 1) ? 2 : 8;
-            break;
-        case 'D':
-            house = (game.currentPlayer == 1) ? 3 : 9;
-            break;
-        case 'E':
-            house = (game.currentPlayer == 1) ? 4 : 10;
-            break;
-        case 'F':
-            house = (game.currentPlayer == 1) ? 5 : 11;
-            break;
-        default:
-            printf("there is a problem");
+            read_client(currentPlayer, &response);
+            response = toupper(response);
+            switch (response)
+            {
+            case 'A':
+                house = (game.currentPlayer == 1) ? 0 : 6;
+                break;
+            case 'B':
+                house = (game.currentPlayer == 1) ? 1 : 7;
+                break;
+            case 'C':
+                house = (game.currentPlayer == 1) ? 2 : 8;
+                break;
+            case 'D':
+                house = (game.currentPlayer == 1) ? 3 : 9;
+                break;
+            case 'E':
+                house = (game.currentPlayer == 1) ? 4 : 10;
+                break;
+            case 'F':
+                house = (game.currentPlayer == 1) ? 5 : 11;
+                break;
+            default:
+                write_client(currentPlayer, "Invalid choice, pick A-F");
+                house = -1;
+            }
         }
+
         playMove(&game, house);
     }
 
-    char buffer[100] = "";
+    char buffer2[100] = "";
     if (game.end == 3)
-        strcat(buffer, "Draw");
+        strcat(buffer2, "Draw");
     else
     {
-        char winner[32] = (game.end == 1) ? player1->name : player2->name;
-        strcat(buffer, "The winner is : ");
-        strcat(buffer, winner);
+        char *winner = (game.end == 1) ? player1->name : player2->name;
+        strcat(buffer2, "The winner is : ");
+        strcat(buffer2, winner);
     }
-    write_client(player1->sock, buffer);
-    write_client(player2->sock, buffer);
+    write_client(player1->sock, buffer2);
+    write_client(player2->sock, buffer2);
 }
