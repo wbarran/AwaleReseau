@@ -16,12 +16,12 @@ void initializeBoard(Awale *g)
 
 char *printBoard(const Awale *g, int player)
 {
-    char *buffer = malloc(BUF_SIZE);
+    char *buffer = malloc(BUF_SIZE2);
     if (!buffer)
         return NULL;
     buffer[0] = '\0';
 
-    int remaining = BUF_SIZE;
+    int remaining = BUF_SIZE2;
     int written = 0;
     int n = 0;
 

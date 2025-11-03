@@ -11,7 +11,7 @@
 // --- Définitions de constantes ou macros ---
 #define SEEDS_PER_HOUSE 4
 #define HOUSE_PER_PLAYER 6
-#define BUF_SIZE 4096
+#define BUF_SIZE2 4096
 
 // --- Déclarations de types ou structures ---
 typedef struct
