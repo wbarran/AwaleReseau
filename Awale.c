@@ -12,12 +12,12 @@ void initializeBoard(Awale *g)
     g->currentPlayer = 1;
 }
 
-void printBoard(const Awale *g)
+void printBoard(const Awale *g, int player)
 {
     printf("\nAwale\n");
     printf("you are player : %1d\n\n", g->currentPlayer);
 
-    if (g->currentPlayer == 1)
+    if (player == 1)
     {
         // board line one
         for (int i = 11; i > 5; i--)

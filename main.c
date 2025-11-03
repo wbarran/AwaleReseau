@@ -5,26 +5,26 @@ int main()
 {
     Awale game;
     initializeBoard(&game);
-    printBoard(&game);
+    printBoard(&game, 1);
 
     printf("\n--- TESTS ---\n");
     playMove(&game, 2);
-    printBoard(&game);
+    printBoard(&game, 1);
 
     playMove(&game, 8);
-    printBoard(&game);
+    printBoard(&game, 2);
 
     playMove(&game, 3);
-    printBoard(&game);
+    printBoard(&game, 1);
 
     playMove(&game, 7);
-    printBoard(&game);
+    printBoard(&game, 2);
 
     playMove(&game, 1);
-    printBoard(&game);
+    printBoard(&game, 1);
 
     playMove(&game, 9);
-    printBoard(&game);
+    printBoard(&game, 2);
 
     return 0;
 }
