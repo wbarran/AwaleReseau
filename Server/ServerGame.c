@@ -16,7 +16,7 @@ void playGame(Client *player1, Client *player2, Client *spectators, int nbSpecta
         write_client(player2->sock, printBoard(&game, 2));
         for (int i = 0; i < nbSpectators; i++)
         {
-            write_client(spectators[i], printBoard(&game, 1));
+            write_client(spectators[i].sock, printBoard(&game, 1));
         }
 
         SOCKET currentPlayer = (game.currentPlayer == 1) ? player1->sock : player2->sock;
