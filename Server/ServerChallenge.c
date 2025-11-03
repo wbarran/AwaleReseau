@@ -55,3 +55,33 @@ void acceptChallenge(Client *clients, Client accepter, int actual, const char* f
         write_client(accepter.sock, message);
     }
 }
+
+void refuseChallenge(Client *clients, Client refuser, int actual, const char* fromName)
+{
+    char message[BUF_SIZE];
+    int found = 0;
+
+    for (int j = 0; j < actual; j++)
+    {
+        if (strcmp(clients[j].name, fromName) == 0)
+        {
+            snprintf(message, BUF_SIZE,
+                     "%s declined your invitation. Try to challenge another player !\n", refuser.name);
+            write_client(clients[j].sock, message);
+
+            snprintf(message, BUF_SIZE,
+                     "You declined %s’s invitation.\n", fromName);
+            write_client(refuser.sock, message);
+
+            found = 1;
+            break;
+        }
+    }
+
+    if (!found)
+    {
+        snprintf(message, BUF_SIZE,
+                 "User '%s' not found.\n", fromName);
+        write_client(refuser.sock, message);
+    }
+}

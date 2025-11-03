@@ -150,6 +150,7 @@ static void app(void)
                   {
                      char fromName[BUF_SIZE];
                      sscanf(buffer, "/refuse %s", fromName);
+                     refuseChallenge(clients, client, actual, fromName);
                   }
 
                   else {return;} // If unknown command.
