@@ -283,7 +283,7 @@ void challengeUser(Client *clients, Client sender, int actual, const char *targe
         if (strcmp(clients[j].name, targetName) == 0)
         {
             snprintf(message, BUF_SIZE,
-                     " %s challenged you to an Awale game!\n To accept his challenge, please type {/accept %s} in your terminal. \n If you want to decline his invitation, please type {/refuse %s}.", sender.name);
+                     " %s challenged you to an Awale game!\n To accept his challenge, please type {/accept %s} in your terminal. \n If you want to decline his invitation, please type {/refuse %s}.", sender.name, sender.name, sender.name);
             write_client(clients[j].sock, message);
             found = 1;
             break;
@@ -308,11 +308,11 @@ void acceptChallenge(Client *clients, Client accepter, int actual, const char* f
         if (strcmp(clients[j].name, fromName) == 0)
         {
             snprintf(message, BUF_SIZE,
-                     "🎉 %s accepted your invitation!\n", accepter.name);
+                     "%s accepted your invitation! The game will now begin !\n", accepter.name);
             write_client(clients[j].sock, message);
 
             snprintf(message, BUF_SIZE,
-                     "You accepted %s’s invitation.\n", fromName);
+                     "You accepted %s’s invitation.  The game will now begin !\n", fromName);
             write_client(accepter.sock, message);
 
             found = 1;
@@ -323,7 +323,7 @@ void acceptChallenge(Client *clients, Client accepter, int actual, const char* f
     if (!found)
     {
         snprintf(message, BUF_SIZE,
-                 "⚠️ User '%s' not found.\n", fromName);
+                 "User '%s' not found.\n", fromName);
         write_client(accepter.sock, message);
     }
 }
