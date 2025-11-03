@@ -253,7 +253,7 @@ static int read_client(SOCKET sock, char *buffer)
    return n;
 }
 
-static void write_client(SOCKET sock, const char *buffer)
+void write_client(SOCKET sock, const char *buffer)
 {
    if (send(sock, buffer, strlen(buffer), 0) < 0)
    {
@@ -273,60 +273,7 @@ void listUsers(char* response, Client *clients, Client client, int actual){
    write_client(client.sock, response);
 }
 
-void challengeUser(Client *clients, Client sender, int actual, const char *targetName)
-{
-    char message[BUF_SIZE];
-    int found = 0;
 
-    for (int j = 0; j < actual; j++)
-    {
-        if (strcmp(clients[j].name, targetName) == 0)
-        {
-            snprintf(message, BUF_SIZE,
-                     " %s challenged you to an Awale game!\n To accept his challenge, please type {/accept %s} in your terminal. \n If you want to decline his invitation, please type {/refuse %s}.", sender.name, sender.name, sender.name);
-            write_client(clients[j].sock, message);
-            found = 1;
-            break;
-        }
-    }
-
-    if (!found)
-    {
-        snprintf(message, BUF_SIZE,
-                 "Error : User '%s' not found or not connected.\n", targetName);
-        write_client(sender.sock, message);
-    }
-}
-
-void acceptChallenge(Client *clients, Client accepter, int actual, const char* fromName)
-{
-    char message[BUF_SIZE];
-    int found = 0;
-
-    for (int j = 0; j < actual; j++)
-    {
-        if (strcmp(clients[j].name, fromName) == 0)
-        {
-            snprintf(message, BUF_SIZE,
-                     "%s accepted your invitation! The game will now begin !\n", accepter.name);
-            write_client(clients[j].sock, message);
-
-            snprintf(message, BUF_SIZE,
-                     "You accepted %s’s invitation.  The game will now begin !\n", fromName);
-            write_client(accepter.sock, message);
-
-            found = 1;
-            break;
-        }
-    }
-
-    if (!found)
-    {
-        snprintf(message, BUF_SIZE,
-                 "User '%s' not found.\n", fromName);
-        write_client(accepter.sock, message);
-    }
-}
 
 int main(int argc, char **argv)
 {
