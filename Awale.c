@@ -12,25 +12,46 @@ void initializeBoard(Awale *g)
     g->currentPlayer = 1;
 }
 
-void printBoard(const int *board)
+void printBoard(const Awale *g)
 {
     printf("\nAwale\n");
-    // board line one
-    for (int i = 11; i > 5; i--)
+    printf("you are player : %1d\n\n", g->currentPlayer);
+
+    if (g->currentPlayer == 1)
     {
-        printf(" %2d ", board[i]);
+        // board line one
+        for (int i = 11; i > 5; i--)
+        {
+            printf(" %2d ", g->board[i]);
+        }
+
+        printf("\n");
+
+        for (int i = 0; i < 6; i++)
+        {
+            printf(" %2d ", g->board[i]);
+        }
+    }
+    else
+    {
+        // board line one
+        for (int i = 5; i >= 0; i--)
+        {
+            printf(" %2d ", g->board[i]);
+        }
+
+        printf("\n");
+
+        for (int i = 6; i < 12; i++)
+        {
+            printf(" %2d ", g->board[i]);
+        }
     }
 
     printf("\n");
-
-    for (int i = 0; i < 6; i++)
-    {
-        printf(" %2d ", board[i]);
-    }
-
-    printf("\n");
-    printf("  A   B   C   D   E   F");
-    printf("\n");
+    printf("  A   B   C   D   E   F\n\n");
+    printf("Player 1 score : %2d\n", g->score1);
+    printf("Player 2 score : %2d\n", g->score2);
 }
 
 void playMove(Awale *game, int houseIndex)
@@ -46,32 +67,34 @@ void playMove(Awale *game, int houseIndex)
     }
 
     // Update the score
-
     // Did the player score points
     int lastHouse = currentHouse;
     int numberOfSeeds = game->board[lastHouse];
-    if (numberOfSeeds != 2 || numberOfSeeds != 3)
+    // You only score when the last house is in the opponent side
+    int minHouse = (game->currentPlayer == 1) ? 6 : 0;
+    int maxHouse = (game->currentPlayer == 1) ? 11 : 5;
+    if (!((numberOfSeeds == 2 || numberOfSeeds == 3) && (lastHouse >= minHouse && lastHouse <= maxHouse)))
+    {
+        game->currentPlayer = (game->currentPlayer == 1) ? 2 : 1;
         return;
+    }
 
     // Yes, how many ?
     int point = 0;
-    while (game->board[currentHouse] == 2 || game->board[currentHouse] == 3)
+
+    while (currentHouse >= minHouse && currentHouse <= maxHouse && (game->board[currentHouse] == 2 || game->board[currentHouse] == 3))
     {
         point += game->board[currentHouse];
         game->board[currentHouse] = 0;
-        if (currentHouse == 0)
-            currentHouse = 12;
         currentHouse--;
     }
 
-    // Find which player is playing
-    int player = 1;
-    if (houseIndex < 6)
-        player = 0;
-
     // Update the score
-    if (player == 0)
+    if (game->currentPlayer == 1)
         game->score1 += point;
     else
         game->score2 += point;
+
+    // Change player
+    game->currentPlayer = (game->currentPlayer == 1) ? 2 : 1;
 }
