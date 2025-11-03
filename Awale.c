@@ -1,57 +1,101 @@
 #include "Awale.h" // Inclure le header correspondant
-#include <math.h>  // Autres bibliothèques nécessaires
 
 void initializeBoard(Awale *g)
 {
+    srand(time(NULL));
+
     for (int i = 0; i < HOUSE_PER_PLAYER * 2; i++)
     {
         g->board[i] = SEEDS_PER_HOUSE;
     }
     g->score1 = 0;
     g->score2 = 0;
-    g->currentPlayer = 1;
+    g->end = 0;
+    g->currentPlayer = (rand() % 2) + 1; // First player is random
 }
 
-void printBoard(const Awale *g, int player)
+char *printBoard(const Awale *g, int player)
 {
-    printf("\nAwale\n");
-    printf("you are player : %1d\n\n", g->currentPlayer);
+    char *buffer = malloc(BUF_SIZE);
+    if (!buffer)
+        return NULL;
+    buffer[0] = '\0';
+
+    int remaining = BUF_SIZE;
+    int written = 0;
+    int n = 0;
+
+    n = snprintf(buffer + written, remaining, "\nAwale\n");
+    written += n;
+    remaining -= n;
+
+    n = snprintf(buffer + written, remaining, "you are player : %d\n\n", player);
+    written += n;
+    remaining -= n;
 
     if (player == 1)
     {
-        // board line one
-        for (int i = 11; i > 5; i--)
+        // ligne du haut : indices 11 -> 6
+        for (int i = 11; i > 5; --i)
         {
-            printf(" %2d ", g->board[i]);
+            n = snprintf(buffer + written, remaining, " %2d ", g->board[i]);
+            written += n;
+            remaining -= n;
+            if (remaining <= 0)
+                break;
         }
+        n = snprintf(buffer + written, remaining, "\n");
+        written += n;
+        remaining -= n;
 
-        printf("\n");
-
-        for (int i = 0; i < 6; i++)
+        for (int i = 0; i < 6; ++i)
         {
-            printf(" %2d ", g->board[i]);
+            n = snprintf(buffer + written, remaining, " %2d ", g->board[i]);
+            written += n;
+            remaining -= n;
+            if (remaining <= 0)
+                break;
         }
     }
     else
     {
-        // board line one
-        for (int i = 5; i >= 0; i--)
+        // joueur 2 => afficher son point de vue
+        for (int i = 5; i >= 0; --i)
         {
-            printf(" %2d ", g->board[i]);
+            n = snprintf(buffer + written, remaining, " %2d ", g->board[i]);
+            written += n;
+            remaining -= n;
+            if (remaining <= 0)
+                break;
         }
+        n = snprintf(buffer + written, remaining, "\n");
+        written += n;
+        remaining -= n;
 
-        printf("\n");
-
-        for (int i = 6; i < 12; i++)
+        for (int i = 6; i < 12; ++i)
         {
-            printf(" %2d ", g->board[i]);
+            n = snprintf(buffer + written, remaining, " %2d ", g->board[i]);
+            written += n;
+            remaining -= n;
+            if (remaining <= 0)
+                break;
         }
     }
 
-    printf("\n");
-    printf("  A   B   C   D   E   F\n\n");
-    printf("Player 1 score : %2d\n", g->score1);
-    printf("Player 2 score : %2d\n", g->score2);
+    n = snprintf(buffer + written, remaining, "\n  A   B   C   D   E   F\n\n");
+    written += n;
+    remaining -= n;
+
+    n = snprintf(buffer + written, remaining, "Player 1 score : %d\n", g->score1);
+    written += n;
+    remaining -= n;
+
+    n = snprintf(buffer + written, remaining, "Player 2 score : %d\n", g->score2);
+    written += n;
+    remaining -= n;
+
+    // Si on a manqué d'espace, le texte est tronqué mais on évite le crash.
+    return buffer;
 }
 
 void playMove(Awale *game, int houseIndex)
@@ -97,4 +141,20 @@ void playMove(Awale *game, int houseIndex)
 
     // Change player
     game->currentPlayer = (game->currentPlayer == 1) ? 2 : 1;
+
+    // Check if the game is finished
+    if (game->score1 > 24 || game->score2 > 24 || (game->score1 == 24 && game->score2 == 24))
+    {
+        endGame(game);
+    }
+}
+
+void endGame(Awale *game)
+{
+    if (game->score1 > 24)
+        game->end = 1;
+    else if (game->score2 > 24)
+        game->end = 2;
+    else
+        game->end = 3;
 }

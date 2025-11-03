@@ -5,7 +5,7 @@ int main()
 {
     Awale game;
     initializeBoard(&game);
-    printBoard(&game, 1);
+    printf("%s", printBoard(&game, 1));
 
     printf("\n--- TESTS ---\n");
     playMove(&game, 2);

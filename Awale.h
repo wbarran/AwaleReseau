@@ -3,10 +3,15 @@
 
 // --- Includes ---
 #include <stdio.h>
+#include <math.h>
+#include <stdlib.h>
+#include <time.h>
+#include <string.h>
 
 // --- Définitions de constantes ou macros ---
 #define SEEDS_PER_HOUSE 4
 #define HOUSE_PER_PLAYER 6
+#define BUF_SIZE 4096
 
 // --- Déclarations de types ou structures ---
 typedef struct
@@ -15,12 +20,13 @@ typedef struct
     int score1;
     int score2;
     int currentPlayer; // 1 or 2
+    int end;
 } Awale;
 
 // --- Prototypes de fonctions ---
 void initializeBoard(Awale *g);
-void printBoard(const Awale *g, int player);
-void playMove(Awale *jeu, int houseIndex);
-int endGame(const Awale *jeu);
+char *printBoard(const Awale *g, int player);
+void playMove(Awale *game, int houseIndex);
+void endGame(Awale *game);
 
 #endif // AWALE_H
