@@ -12,6 +12,15 @@
 #include "client2.h"
 #include "../Awale.h"
 
+typedef struct {
+    Client player1;
+    Client player2;
+    Client spectators[MAX_CLIENTS];
+    int nbSpectators;
+} GameArgs;
+
 void playGame(Client *player1, Client *player2, Client *spectators, int nbSpectators);
+void *gameThread(void *arg);
+
 
 #endif

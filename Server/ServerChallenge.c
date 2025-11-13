@@ -1,6 +1,7 @@
 #include "ServerChallenge.h"
 
 
+
 void challengeUser(Client *clients, Client sender, int actual, const char *targetName)
 {
     char message[BUF_SIZE];
@@ -44,7 +45,16 @@ void acceptChallenge(Client *clients, Client accepter, int actual, const char* f
             write_client(accepter.sock, message);
 
             Client spectators[0];
-            playGame(&accepter, &clients[j], spectators, 0);
+            //playGame(&accepter, &clients[j], spectators, 0);
+            GameArgs *args = malloc(sizeof(GameArgs));
+            args->player1 = accepter;
+            args->player2 = clients[j];
+            args->nbSpectators = 0; // pour le moment
+
+            pthread_t thread;
+            pthread_create(&thread, NULL, gameThread, args);
+            pthread_detach(thread); // détaché pour ne pas bloquer le serveur
+
 
             found = 1;
             break;
@@ -87,4 +97,6 @@ void refuseChallenge(Client *clients, Client refuser, int actual, const char* fr
                  "User '%s' not found.\n", fromName);
         write_client(refuser.sock, message);
     }
+
+    
 }

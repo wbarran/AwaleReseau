@@ -68,3 +68,15 @@ void playGame(Client *player1, Client *player2, Client *spectators, int nbSpecta
     write_client(player1->sock, buffer2);
     write_client(player2->sock, buffer2);
 }
+
+
+
+void* gameThread(void *arg)
+{
+    GameArgs *args = (GameArgs *)arg;
+
+    playGame(&args->player1, &args->player2, args->spectators, args->nbSpectators);
+
+    free(arg); // très important : libère la mémoire allouée dynamiquement
+    pthread_exit(NULL);
+}
