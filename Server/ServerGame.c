@@ -11,26 +11,16 @@ void playGame(Client *player1, Client *player2, Client *spectators, int nbSpecta
     write_client(player2->sock, buffer);
 
     int forfait = 0;
+    int drawProposed = 0;
     while (game.end == 0)
     {
-        write_client(player1->sock, printBoard(&game, 1));
-        write_client(player2->sock, printBoard(&game, 2));
-        for (int i = 0; i < nbSpectators; i++)
-        {
-            write_client(spectators[i].sock, printBoard(&game, 1));
-        }
-
         Client *currentPlayer = (game.currentPlayer == 1) ? player1 : player2;
-        // vider tout ce qui traîne dans le socket du joueur actif
-        char dummy;
-        while (recv(currentPlayer->sock, &dummy, 1, MSG_DONTWAIT) > 0)
-        {
-        }
-        write_client(currentPlayer->sock, "It is your turn to play, pick a house please (from A to F)");
+        Client *otherPlayer = (game.currentPlayer == 1) ? player2 : player1;
         char response;
-        if (currentPlayer->proposedDraw)
+        if (drawProposed)
         {
-            read_client(currentPlayer->sock, &response);
+
+            read_client(otherPlayer->sock, &response);
             if (toupper(response) == 'Y')
             {
                 game.end = 3; // la partie est nulle
@@ -42,13 +32,27 @@ void playGame(Client *player1, Client *player2, Client *spectators, int nbSpecta
                 write_client(player1->sock, "Draw refused!");
                 write_client(player2->sock, "Draw refused!");
             }
-            currentPlayer->proposedDraw = 0;
+            drawProposed = 0;
             continue; // reprendre le tour normalement
         }
-        int house = -1;
-        while (house == -1 && forfait == 0)
+        write_client(player1->sock, printBoard(&game, 1));
+        write_client(player2->sock, printBoard(&game, 2));
+        for (int i = 0; i < nbSpectators; i++)
         {
-            read_client(currentPlayer, &response);
+            write_client(spectators[i].sock, printBoard(&game, 1));
+        }
+
+        // vider tout ce qui traîne dans le socket du joueur actif
+        char dummy;
+        while (recv(currentPlayer->sock, &dummy, 1, MSG_DONTWAIT) > 0)
+        {
+        }
+        write_client(currentPlayer->sock, "It is your turn to play, pick a house please (from A to F), propose draw (T) or forfait (Q)");
+
+        int house = -1;
+        while (house == -1 && forfait == 0 && drawProposed == 0)
+        {
+            read_client(currentPlayer->sock, &response);
             response = toupper(response);
             switch (response)
             {
@@ -71,10 +75,10 @@ void playGame(Client *player1, Client *player2, Client *spectators, int nbSpecta
                 house = (game.currentPlayer == 1) ? 5 : 11;
                 break;
             case 'T':
-                Client *otherPlayer = (game.currentPlayer == 1) ? player2 : player1;
-                otherPlayer->proposedDraw = 1; // flag pour savoir qu'on attend sa réponse
+                drawProposed = 1;
+                // otherPlayer->proposedDraw = 1; // flag pour savoir qu'on attend sa réponse
                 write_client(otherPlayer->sock, "Your opponent proposes a draw! Type Y to accept or N to refuse.");
-                write_client(currentPlayer, "Draw proposed. Waiting for opponent's response...");
+                write_client(currentPlayer->sock, "Draw proposed. Waiting for opponent's response...");
                 house = -1;
                 break;
             case 'Q':
@@ -82,12 +86,12 @@ void playGame(Client *player1, Client *player2, Client *spectators, int nbSpecta
                 game.end = (game.currentPlayer == 1) ? 2 : 1;
                 break;
             default:
-                write_client(currentPlayer, "Invalid choice, pick A-F");
+                write_client(currentPlayer->sock, "Invalid choice, pick A-F");
                 house = -1;
             }
         }
-
-        playMove(&game, house);
+        if (!drawProposed)
+            playMove(&game, house);
     }
 
     char buffer2[100] = "";

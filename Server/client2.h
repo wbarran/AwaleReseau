@@ -8,7 +8,6 @@ typedef struct
    SOCKET sock;
    char name[BUF_SIZE / 4];
    int inGame;
-   int proposedDraw;
    char challengedBy[BUF_SIZE / 4];
 } Client;
 
