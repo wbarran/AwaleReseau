@@ -21,6 +21,11 @@ void playGame(Client *player1, Client *player2, Client *spectators, int nbSpecta
         }
 
         Client *currentPlayer = (game.currentPlayer == 1) ? player1 : player2;
+        // vider tout ce qui traîne dans le socket du joueur actif
+        char dummy;
+        while (recv(currentPlayer->sock, &dummy, 1, MSG_DONTWAIT) > 0)
+        {
+        }
         write_client(currentPlayer->sock, "It is your turn to play, pick a house please (from A to F)");
         char response;
         if (currentPlayer->proposedDraw)

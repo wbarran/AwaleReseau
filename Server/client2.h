@@ -9,6 +9,7 @@ typedef struct
    char name[BUF_SIZE / 4];
    int inGame;
    int proposedDraw;
+   char challengedBy[BUF_SIZE / 4];
 } Client;
 
 #endif /* guard */

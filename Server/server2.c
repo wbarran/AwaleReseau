@@ -91,7 +91,10 @@ static void app(void)
 
          FD_SET(csock, &rdfs);
 
-         Client c = {csock};
+         Client c = {0};
+         c.sock = csock;
+         c.inGame = 0;
+         c.challengedBy[0] = '\0';
          strncpy(c.name, buffer, BUF_SIZE / 4 - 1);
          clients[actual] = c;
          actual++;
@@ -153,7 +156,7 @@ static void app(void)
                   {
                      char fromName[BUF_SIZE];
                      sscanf(buffer, "/refuse %s", fromName);
-                     refuseChallenge(clients, *client, actual, fromName);
+                     refuseChallenge(clients, client, actual, fromName);
                   }
 
                   else
