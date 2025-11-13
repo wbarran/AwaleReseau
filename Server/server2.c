@@ -92,7 +92,7 @@ static void app(void)
          FD_SET(csock, &rdfs);
 
          Client c = {csock};
-         strncpy(c.name, buffer, BUF_SIZE - 1);
+         strncpy(c.name, buffer, BUF_SIZE / 4 - 1);
          clients[actual] = c;
          actual++;
       }
@@ -104,9 +104,10 @@ static void app(void)
             /* a client is talking */
             if (FD_ISSET(clients[i].sock, &rdfs))
             {
-               if (clients[i].inGame) continue;
+               if (clients[i].inGame)
+                  continue;
 
-               //Client client = clients[i];
+               // Client client = clients[i];
                Client *client = &clients[i];
                int c = read_client(clients[i].sock, buffer);
                /* client disconnected */
@@ -120,7 +121,7 @@ static void app(void)
                }
                else
                {
-                  //send_message_to_all_clients(clients, client, actual, buffer, 0);
+                  // send_message_to_all_clients(clients, client, actual, buffer, 0);
                   char response[BUF_SIZE];
                   response[0] = '\0';
 
@@ -155,7 +156,10 @@ static void app(void)
                      refuseChallenge(clients, *client, actual, fromName);
                   }
 
-                  else {return;} // If unknown command.
+                  else
+                  {
+                     return;
+                  } // If unknown command.
                }
                break;
             }
@@ -265,18 +269,17 @@ void write_client(SOCKET sock, const char *buffer)
    }
 }
 
-void listUsers(char* response, Client *clients, Client client, int actual){
+void listUsers(char *response, Client *clients, Client client, int actual)
+{
    strcpy(response, "Connected clients:\n");
    for (int j = 0; j < actual; j++)
    {
-         strcat(response, " - ");
-         strcat(response, clients[j].name);
-         strcat(response, "\n");
+      strcat(response, " - ");
+      strcat(response, clients[j].name);
+      strcat(response, "\n");
    }
    write_client(client.sock, response);
 }
-
-
 
 int main(int argc, char **argv)
 {
