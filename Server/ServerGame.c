@@ -10,6 +10,7 @@ void playGame(Client *player1, Client *player2, Client *spectators, int nbSpecta
     write_client(player1->sock, buffer);
     write_client(player2->sock, buffer);
 
+    int quit = 0;
     while (game.end == 0)
     {
         write_client(player1->sock, printBoard(&game, 1));
@@ -23,7 +24,7 @@ void playGame(Client *player1, Client *player2, Client *spectators, int nbSpecta
         write_client(currentPlayer, "It is your turn to play, pick a house please (from A to F)");
         char response;
         int house = -1;
-        while (house == -1)
+        while (house == -1 && quit == 0)
         {
             read_client(currentPlayer, &response);
             response = toupper(response);
@@ -49,6 +50,7 @@ void playGame(Client *player1, Client *player2, Client *spectators, int nbSpecta
                 break;
             case 'N':
                 game.end = 3;
+                quit = 1;
                 break;
             default:
                 write_client(currentPlayer, "Invalid choice, pick A-F");
@@ -74,9 +76,7 @@ void playGame(Client *player1, Client *player2, Client *spectators, int nbSpecta
     player2->inGame = 0;
 }
 
-
-
-void* gameThread(void *arg)
+void *gameThread(void *arg)
 {
     GameArgs *args = (GameArgs *)arg;
 

@@ -158,7 +158,7 @@ static void app(void)
 
                   else
                   {
-                     return;
+                     write_client(client->sock, "Unknown command. Try /help\n");
                   } // If unknown command.
                }
                break;
