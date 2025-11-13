@@ -67,6 +67,17 @@ static void app(const char *address, const char *name)
                /* fclean */
                buffer[BUF_SIZE - 1] = 0;
             }
+            if (strncmp(buffer, "/help", 5) == 0)
+            {
+               printf("\nAvailable commands:\n");
+               printf("/who           - List connected players\n");
+               printf("/vs <name>     - Challenge another player\n");
+               printf("/accept <name> - Accept a challenge\n");
+               printf("/refuse <name> - Refuse a challenge\n");
+               printf("/help          - Show this help message\n\n");
+               continue;
+            }
+
          }
          write_server(sock, buffer);
       }
