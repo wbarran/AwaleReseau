@@ -11,8 +11,14 @@ void challengeUser(Client *clients, Client sender, int actual, const char *targe
     {
         if (strcmp(clients[j].name, targetName) == 0)
         {
-            printf("%d", clients[j].inGame);
-            printf("%d", sender.inGame);
+            //printf("%d", clients[j].inGame);
+            //printf("%d", sender.inGame);
+            if (strcmp(clients[j].name, sender.name) == 0){
+            snprintf(message, BUF_SIZE,
+                    " You can't challenge yourself. Challenge another person.");
+            write_client(sender.sock, message);
+            return;
+            }
             if (clients[j].inGame){
             snprintf(message, BUF_SIZE,
                      " %s is already in game. Challenge another person.", clients[j].name);
