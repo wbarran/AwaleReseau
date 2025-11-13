@@ -1,10 +1,23 @@
-all: client_exec server_exec
+CC = gcc
+CFLAGS = -pthread
 
-client_exec:
-	gcc -o client_exec Client/client2.c
+# Fichiers sources
+CLIENT_SRC = Client/client2.c
+SERVER_SRC = Server/server2.c Server/ServerChallenge.c Server/ServerGame.c Awale.c
 
-server_exec:
-	gcc -o server_exec Server/server2.c Server/ServerChallenge.c Server/ServerGame.c Awale.c -lpthread
+# Executables
+CLIENT_EXEC = client_exec
+SERVER_EXEC = server_exec
+
+all: $(CLIENT_EXEC) $(SERVER_EXEC)
+
+# Compilation client
+$(CLIENT_EXEC): $(CLIENT_SRC)
+	$(CC) $(CFLAGS) -o $@ $^
+
+# Compilation serveur
+$(SERVER_EXEC): $(SERVER_SRC)
+	$(CC) $(CFLAGS) -o $@ $^
 
 clean:
-	rm -f client_exec server_exec
+	rm -f $(CLIENT_EXEC) $(SERVER_EXEC)
