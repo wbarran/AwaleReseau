@@ -6,8 +6,9 @@
 typedef struct
 {
    SOCKET sock;
-   char name[BUF_SIZE/4];
+   char name[BUF_SIZE / 4];
    int inGame;
-}Client;
+   int proposedDraw;
+} Client;
 
 #endif /* guard */

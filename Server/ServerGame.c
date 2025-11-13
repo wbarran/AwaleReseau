@@ -10,7 +10,7 @@ void playGame(Client *player1, Client *player2, Client *spectators, int nbSpecta
     write_client(player1->sock, buffer);
     write_client(player2->sock, buffer);
 
-    int quit = 0;
+    int forfait = 0;
     while (game.end == 0)
     {
         write_client(player1->sock, printBoard(&game, 1));
@@ -20,11 +20,28 @@ void playGame(Client *player1, Client *player2, Client *spectators, int nbSpecta
             write_client(spectators[i].sock, printBoard(&game, 1));
         }
 
-        SOCKET currentPlayer = (game.currentPlayer == 1) ? player1->sock : player2->sock;
-        write_client(currentPlayer, "It is your turn to play, pick a house please (from A to F)");
+        Client *currentPlayer = (game.currentPlayer == 1) ? player1 : player2;
+        write_client(currentPlayer->sock, "It is your turn to play, pick a house please (from A to F)");
         char response;
+        if (currentPlayer->proposedDraw)
+        {
+            read_client(currentPlayer->sock, &response);
+            if (toupper(response) == 'Y')
+            {
+                game.end = 3; // la partie est nulle
+                write_client(player1->sock, "Draw accepted!");
+                write_client(player2->sock, "Draw accepted!");
+            }
+            else
+            {
+                write_client(player1->sock, "Draw refused!");
+                write_client(player2->sock, "Draw refused!");
+            }
+            currentPlayer->proposedDraw = 0;
+            continue; // reprendre le tour normalement
+        }
         int house = -1;
-        while (house == -1 && quit == 0)
+        while (house == -1 && forfait == 0)
         {
             read_client(currentPlayer, &response);
             response = toupper(response);
@@ -48,9 +65,16 @@ void playGame(Client *player1, Client *player2, Client *spectators, int nbSpecta
             case 'F':
                 house = (game.currentPlayer == 1) ? 5 : 11;
                 break;
-            case 'N':
-                game.end = 3;
-                quit = 1;
+            case 'T':
+                Client *otherPlayer = (game.currentPlayer == 1) ? player2 : player1;
+                otherPlayer->proposedDraw = 1; // flag pour savoir qu'on attend sa réponse
+                write_client(otherPlayer->sock, "Your opponent proposes a draw! Type Y to accept or N to refuse.");
+                write_client(currentPlayer, "Draw proposed. Waiting for opponent's response...");
+                house = -1;
+                break;
+            case 'Q':
+                forfait = 1;
+                game.end = (game.currentPlayer == 1) ? 2 : 1;
                 break;
             default:
                 write_client(currentPlayer, "Invalid choice, pick A-F");
