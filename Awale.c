@@ -100,6 +100,12 @@ char *printBoard(const Awale *g, int player)
 
 void playMove(Awale *game, int houseIndex)
 {
+    if (houseIndex == -1) // We skip the turn
+    {
+        game->currentPlayer = (game->currentPlayer == 1) ? 2 : 1;
+        return;
+    }
+
     // Adding one seed in the houses after the one selected
     int seedNumber = game->board[houseIndex];
     game->board[houseIndex] = 0;
@@ -110,7 +116,6 @@ void playMove(Awale *game, int houseIndex)
         game->board[currentHouse]++;
     }
 
-    // Update the score
     // Did the player score points
     int lastHouse = currentHouse;
     int numberOfSeeds = game->board[lastHouse];
