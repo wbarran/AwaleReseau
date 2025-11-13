@@ -104,6 +104,8 @@ static void app(void)
             /* a client is talking */
             if (FD_ISSET(clients[i].sock, &rdfs))
             {
+               if (clients[i].inGame) continue;
+
                //Client client = clients[i];
                Client *client = &clients[i];
                int c = read_client(clients[i].sock, buffer);
