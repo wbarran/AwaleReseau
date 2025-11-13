@@ -15,6 +15,6 @@
 
 
 void challengeUser(Client *clients, Client sender, int actual, const char *targetName);
-void acceptChallenge(Client *clients, Client accepter, int actual, const char* fromName);
+void acceptChallenge(Client *clients, Client *accepter, int actual, const char* fromName);
 void refuseChallenge(Client *clients, Client refuser, int actual, const char* fromName);
 #endif

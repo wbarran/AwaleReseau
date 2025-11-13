@@ -47,6 +47,9 @@ void playGame(Client *player1, Client *player2, Client *spectators, int nbSpecta
             case 'F':
                 house = (game.currentPlayer == 1) ? 5 : 11;
                 break;
+            case 'N':
+                game.end = 3;
+                break;
             default:
                 write_client(currentPlayer, "Invalid choice, pick A-F");
                 house = -1;
@@ -67,6 +70,8 @@ void playGame(Client *player1, Client *player2, Client *spectators, int nbSpecta
     }
     write_client(player1->sock, buffer2);
     write_client(player2->sock, buffer2);
+    player1->inGame = 0;
+    player2->inGame = 0;
 }
 
 
@@ -75,7 +80,7 @@ void* gameThread(void *arg)
 {
     GameArgs *args = (GameArgs *)arg;
 
-    playGame(&args->player1, &args->player2, args->spectators, args->nbSpectators);
+    playGame(args->player1, args->player2, args->spectators, args->nbSpectators);
 
     free(arg); // très important : libère la mémoire allouée dynamiquement
     pthread_exit(NULL);

@@ -13,8 +13,8 @@
 #include "../Awale.h"
 
 typedef struct {
-    Client player1;
-    Client player2;
+    Client* player1;
+    Client* player2;
     Client spectators[MAX_CLIENTS];
     int nbSpectators;
 } GameArgs;

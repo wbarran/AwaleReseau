@@ -104,16 +104,17 @@ static void app(void)
             /* a client is talking */
             if (FD_ISSET(clients[i].sock, &rdfs))
             {
-               Client client = clients[i];
+               //Client client = clients[i];
+               Client *client = &clients[i];
                int c = read_client(clients[i].sock, buffer);
                /* client disconnected */
                if (c == 0)
                {
                   closesocket(clients[i].sock);
                   remove_client(clients, i, &actual);
-                  strncpy(buffer, client.name, BUF_SIZE - 1);
+                  strncpy(buffer, client->name, BUF_SIZE - 1);
                   strncat(buffer, " disconnected !", BUF_SIZE - strlen(buffer) - 1);
-                  send_message_to_all_clients(clients, client, actual, buffer, 1);
+                  send_message_to_all_clients(clients, *client, actual, buffer, 1);
                }
                else
                {
@@ -124,7 +125,7 @@ static void app(void)
                   // List all the users' names
                   if (strncmp(buffer, "/who", 4) == 0)
                   {
-                     listUsers(response, clients, client, actual);
+                     listUsers(response, clients, *client, actual);
                   }
 
                   // Challenge another user to a game
@@ -133,7 +134,7 @@ static void app(void)
                      char targetName[BUF_SIZE];
                      sscanf(buffer, "/vs %s", targetName); // get the challenged client's name
 
-                     challengeUser(clients, client, actual, targetName);
+                     challengeUser(clients, *client, actual, targetName);
                   }
 
                   // Accept an invitation to a game
@@ -149,7 +150,7 @@ static void app(void)
                   {
                      char fromName[BUF_SIZE];
                      sscanf(buffer, "/refuse %s", fromName);
-                     refuseChallenge(clients, client, actual, fromName);
+                     refuseChallenge(clients, *client, actual, fromName);
                   }
 
                   else {return;} // If unknown command.

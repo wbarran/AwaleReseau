@@ -11,10 +11,21 @@ void challengeUser(Client *clients, Client sender, int actual, const char *targe
     {
         if (strcmp(clients[j].name, targetName) == 0)
         {
+            printf("%d", clients[j].inGame);
+            printf("%d", sender.inGame);
+            if (clients[j].inGame){
+            snprintf(message, BUF_SIZE,
+                     " %s is already in game. Challenge another person.", clients[j].name);
+            write_client(sender.sock, message);
+            return;
+            }
             snprintf(message, BUF_SIZE,
                      " %s challenged you to an Awale game!\n To accept his challenge, please type {/accept %s} in your terminal. \n If you want to decline his invitation, please type {/refuse %s}.", sender.name, sender.name, sender.name);
             write_client(clients[j].sock, message);
             found = 1;
+            snprintf(message, BUF_SIZE,
+                     " Waiting for a response.");
+            write_client(sender.sock, message);
             break;
         }
     }
@@ -27,7 +38,7 @@ void challengeUser(Client *clients, Client sender, int actual, const char *targe
     }
 }
 
-void acceptChallenge(Client *clients, Client accepter, int actual, const char* fromName)
+void acceptChallenge(Client *clients, Client *accepter, int actual, const char* fromName)
 {
     char message[BUF_SIZE];
     int found = 0;
@@ -37,19 +48,23 @@ void acceptChallenge(Client *clients, Client accepter, int actual, const char* f
         if (strcmp(clients[j].name, fromName) == 0)
         {
             snprintf(message, BUF_SIZE,
-                     "%s accepted your invitation! The game will now begin !\n", accepter.name);
+                     "%s accepted your invitation! The game will now begin !\n", accepter->name);
             write_client(clients[j].sock, message);
 
             snprintf(message, BUF_SIZE,
                      "You accepted %s’s invitation.  The game will now begin !\n", fromName);
-            write_client(accepter.sock, message);
+            write_client(accepter->sock, message);
 
             Client spectators[0];
             //playGame(&accepter, &clients[j], spectators, 0);
             GameArgs *args = malloc(sizeof(GameArgs));
             args->player1 = accepter;
-            args->player2 = clients[j];
+            args->player2 = &clients[j];
             args->nbSpectators = 0; // pour le moment
+
+            accepter->inGame = 1;
+            (&clients[j])->inGame = 1;
+
 
             pthread_t thread;
             pthread_create(&thread, NULL, gameThread, args);
@@ -65,7 +80,7 @@ void acceptChallenge(Client *clients, Client accepter, int actual, const char* f
     {
         snprintf(message, BUF_SIZE,
                  "User '%s' not found.\n", fromName);
-        write_client(accepter.sock, message);
+        write_client(accepter->sock, message);
     }
 }
 
