@@ -123,9 +123,11 @@ static void app(void)
                /* client disconnected */
                if (c <= 0)
                {
+                  char dcPlayer[BUF_SIZE];
+                  strcpy(dcPlayer, clients[i].name);
                   closesocket(clients[i].sock);
                   remove_client(clients, i, &actual);
-                  strncpy(buffer, client->name, BUF_SIZE - 1);
+                  strncpy(buffer, dcPlayer, BUF_SIZE - 1);
                   strncat(buffer, " disconnected !", BUF_SIZE - strlen(buffer) - 1);
                   send_message_to_all_clients(clients, *client, actual, buffer, 1);
                   buffer[0] = '\0';
