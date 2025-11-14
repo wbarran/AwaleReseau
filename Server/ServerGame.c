@@ -26,11 +26,27 @@ void playGame(Client *player1, Client *player2, Client *spectators, int nbSpecta
         Client *currentPlayer = (game.currentPlayer == 1) ? player1 : player2;
         Client *otherPlayer = (game.currentPlayer == 1) ? player2 : player1;
         char response;
+        char buf[BUF_SIZE];
+
         if (drawProposed)
         {
 
-            read_client(otherPlayer->sock, &response);
-            if (toupper(response) == 'Y')
+            int r = read_client(otherPlayer->sock, buf);
+            if (r == -1)
+            {
+                game.end = (game.currentPlayer == 1 ? 1 : 2);
+                break;
+            }
+            // On prend uniquement le premier caractère non-espace/non-retour à la ligne
+            int idx = 0;
+            while (idx < r && (buf[idx] == ' ' || buf[idx] == '\n' || buf[idx] == '\r'))
+                idx++;
+
+            if (idx >= r)
+                continue; // message vide, on attend encore
+
+            response = toupper(buf[idx]);
+            if (response == 'Y')
             {
                 game.end = 3; // la partie est nulle
                 write_client(player1->sock, "Draw accepted!\n");
@@ -44,8 +60,7 @@ void playGame(Client *player1, Client *player2, Client *spectators, int nbSpecta
             drawProposed = 0;
             continue; // reprendre le tour normalement
         }
-        write_client(player1->sock, printBoard(&game, 1));
-        write_client(player2->sock, printBoard(&game, 2));
+
         // check si l'autre joueur est encore connecté
         if (write_client(otherPlayer->sock, " \n") == -1)
         {
@@ -85,13 +100,21 @@ void playGame(Client *player1, Client *player2, Client *spectators, int nbSpecta
         int house = -1;
         while (house == -1 && forfait == 0 && drawProposed == 0)
         {
-            int r = read_client(currentPlayer->sock, &response);
+            int r = read_client(currentPlayer->sock, buf);
             if (r == -1)
             {
                 game.end = (game.currentPlayer == 1 ? 2 : 1);
                 break;
             }
-            response = toupper(response);
+            // On prend uniquement le premier caractère non-espace/non-retour à la ligne
+            int idx = 0;
+            while (idx < r && (buf[idx] == ' ' || buf[idx] == '\n' || buf[idx] == '\r'))
+                idx++;
+
+            if (idx >= r)
+                continue; // message vide, on attend encore
+
+            response = toupper(buf[idx]);
             switch (response)
             {
             case 'A':
@@ -115,7 +138,7 @@ void playGame(Client *player1, Client *player2, Client *spectators, int nbSpecta
             case 'T':
                 drawProposed = 1;
                 // otherPlayer->proposedDraw = 1; // flag pour savoir qu'on attend sa réponse
-                write_client(otherPlayer->sock, "Your opponent proposes a draw! Type Y to accept or N to refuse.");
+                write_client(otherPlayer->sock, "Your opponent proposes a draw! Type Y to accept or anything else to refuse.");
                 write_client(currentPlayer->sock, "Draw proposed. Waiting for opponent's response...");
                 house = -1;
                 break;
