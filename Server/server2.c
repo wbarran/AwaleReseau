@@ -98,6 +98,9 @@ static void app(void)
          strncpy(c.name, buffer, BUF_SIZE / 4 - 1);
          clients[actual] = c;
          actual++;
+         buffer[0] = '\0';
+          i--;
+          continue;
       }
       else
       {
@@ -114,13 +117,15 @@ static void app(void)
                Client *client = &clients[i];
                int c = read_client(clients[i].sock, buffer);
                /* client disconnected */
-               if (c == 0)
+               if (c <= 0)
                {
                   closesocket(clients[i].sock);
                   remove_client(clients, i, &actual);
                   strncpy(buffer, client->name, BUF_SIZE - 1);
                   strncat(buffer, " disconnected !", BUF_SIZE - strlen(buffer) - 1);
                   send_message_to_all_clients(clients, *client, actual, buffer, 1);
+                  buffer[0] = '\0';
+                  continue;
                }
                else
                {
@@ -247,30 +252,54 @@ static void end_connection(int sock)
    closesocket(sock);
 }
 
-int read_client(SOCKET sock, char *buffer)
+/* int read_client(SOCKET sock, char *buffer)
 {
    int n = 0;
 
    if ((n = recv(sock, buffer, BUF_SIZE - 1, 0)) < 0)
    {
       perror("recv()");
-      /* if recv error we disonnect the client */
+      // if recv error we disonnect the client
       n = 0;
    }
 
    buffer[n] = 0;
 
    return n;
+} */
+
+int read_client(SOCKET sock, char *buffer)
+{
+    int n = recv(sock, buffer, BUF_SIZE - 1, 0);
+
+    if (n <= 0)
+    {
+        return -1; // client déconnecté
+    }
+
+    buffer[n] = '\0';
+    return n;
 }
 
-void write_client(SOCKET sock, const char *buffer)
+
+/* void write_client(SOCKET sock, const char *buffer)
 {
    if (send(sock, buffer, strlen(buffer), 0) < 0)
    {
       perror("send()");
       exit(errno);
    }
+} */
+
+int write_client(SOCKET sock, const char *buffer)
+{
+    if (send(sock, buffer, strlen(buffer), 0) <= 0)
+    {
+        return -1; // socket mort
+    }
+    return 0;
 }
+
 
 void listUsers(char *response, Client *clients, Client client, int actual)
 {

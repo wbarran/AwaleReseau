@@ -7,8 +7,17 @@ void playGame(Client *player1, Client *player2, Client *spectators, int nbSpecta
     char *start = (game.currentPlayer == 1) ? player1->name : player2->name;
     char buffer[100] = "Welcome to your Awale game, starting player : ";
     strcat(buffer, start);
-    write_client(player1->sock, buffer);
-    write_client(player2->sock, buffer);
+    // write_client(player1->sock, buffer);
+    if (write_client(player1->sock, buffer) == -1)
+    {
+        game.end = 2; // joueur 1 mort → l'autre gagne
+    }
+
+    // write_client(player2->sock, buffer);
+    if (write_client(player2->sock, buffer) == -1)
+    {
+        game.end = 1;
+    }
 
     int forfait = 0;
     int drawProposed = 0;
@@ -37,6 +46,25 @@ void playGame(Client *player1, Client *player2, Client *spectators, int nbSpecta
         }
         write_client(player1->sock, printBoard(&game, 1));
         write_client(player2->sock, printBoard(&game, 2));
+        // check si l'autre joueur est encore connecté
+        if (write_client(otherPlayer->sock, " \n") == -1)
+        {
+            game.end = game.currentPlayer; // le joueur actif gagne
+            break;
+        }
+
+        if (write_client(player1->sock, printBoard(&game, 1)) == -1)
+        {
+            game.end = 2; // joueur 1 mort → l'autre gagne
+            break;
+        }
+
+        if (write_client(player2->sock, printBoard(&game, 2)) == -1)
+        {
+            game.end = 1;
+            break;
+        }
+
         for (int i = 0; i < nbSpectators; i++)
         {
             write_client(spectators[i].sock, printBoard(&game, 1));
@@ -47,12 +75,22 @@ void playGame(Client *player1, Client *player2, Client *spectators, int nbSpecta
         while (recv(currentPlayer->sock, &dummy, 1, MSG_DONTWAIT) > 0)
         {
         }
-        write_client(currentPlayer->sock, "It is your turn to play, pick a house please (from A to F), propose draw (T) or forfait (Q)");
 
+        // write_client(currentPlayer, "It is your turn to play, pick a house please (from A to F)");
+        if (write_client(currentPlayer->sock, "It is your turn to play, pick a house please (from A to F)") == -1)
+        {
+            game.end = (game.currentPlayer == 1 ? 2 : 1);
+            break;
+        }
         int house = -1;
         while (house == -1 && forfait == 0 && drawProposed == 0)
         {
-            read_client(currentPlayer->sock, &response);
+            int r = read_client(currentPlayer->sock, &response);
+            if (r == -1)
+            {
+                game.end = (game.currentPlayer == 1 ? 2 : 1);
+                break;
+            }
             response = toupper(response);
             switch (response)
             {
@@ -86,7 +124,12 @@ void playGame(Client *player1, Client *player2, Client *spectators, int nbSpecta
                 game.end = (game.currentPlayer == 1) ? 2 : 1;
                 break;
             default:
-                write_client(currentPlayer->sock, "Invalid choice, pick A-F");
+                // write_client(currentPlayer, "Invalid choice, pick A-F");
+                if (write_client(currentPlayer->sock, "Invalid choice, pick A-F") == -1)
+                {
+                    game.end = (game.currentPlayer == 1 ? 2 : 1);
+                    break;
+                }
                 house = -1;
             }
         }
@@ -102,9 +145,18 @@ void playGame(Client *player1, Client *player2, Client *spectators, int nbSpecta
         char *winner = (game.end == 1) ? player1->name : player2->name;
         strcat(buffer2, "The winner is : ");
         strcat(buffer2, winner);
+        strcat(buffer2, "\n");
     }
-    write_client(player1->sock, buffer2);
-    write_client(player2->sock, buffer2);
+    // write_client(player1->sock, buffer2);
+    // write_client(player2->sock, buffer2);
+    if (write_client(player1->sock, buffer2) == -1)
+    {
+        game.end = 2;
+    }
+    if (write_client(player2->sock, buffer2) == -1)
+    {
+        game.end = 1;
+    }
     player1->inGame = 0;
     player2->inGame = 0;
 }
