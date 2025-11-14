@@ -317,6 +317,7 @@ void listUsers(char *response, Client *clients, Client client, int actual)
 
 int main(int argc, char **argv)
 {
+   signal(SIGPIPE, SIG_IGN);
    init();
 
    app();
