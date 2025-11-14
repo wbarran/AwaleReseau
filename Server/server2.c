@@ -80,10 +80,22 @@ static void app(void)
          }
 
          /* after connecting the client sends its name */
-         if (read_client(csock, buffer) == -1)
+
+         int ok = 0;
+         while (!ok)
          {
-            /* disconnected */
-            continue;
+            read_client(csock, buffer);
+            int find = 0;
+            for (int i = 0; i < actual; i++)
+            {
+               if (strcmp(buffer, clients[i].name) == 0)
+               {
+                  find = 1;
+                  write_client(csock, "choose a name which does not already exist.\n");
+               }
+            }
+            if (find == 0)
+               ok = 1;
          }
 
          /* what is the new maximum fd ? */
