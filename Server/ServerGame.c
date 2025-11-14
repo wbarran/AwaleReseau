@@ -33,13 +33,13 @@ void playGame(Client *player1, Client *player2, Client *spectators, int nbSpecta
             if (toupper(response) == 'Y')
             {
                 game.end = 3; // la partie est nulle
-                write_client(player1->sock, "Draw accepted!");
-                write_client(player2->sock, "Draw accepted!");
+                write_client(player1->sock, "Draw accepted!\n");
+                write_client(player2->sock, "Draw accepted!\n");
             }
             else
             {
-                write_client(player1->sock, "Draw refused!");
-                write_client(player2->sock, "Draw refused!");
+                write_client(player1->sock, "Draw refused!\n");
+                write_client(player2->sock, "Draw refused!\n");
             }
             drawProposed = 0;
             continue; // reprendre le tour normalement
