@@ -77,7 +77,7 @@ void playGame(Client *player1, Client *player2, Client *spectators, int nbSpecta
         }
 
         // write_client(currentPlayer, "It is your turn to play, pick a house please (from A to F)");
-        if (write_client(currentPlayer->sock, "It is your turn to play, pick a house please (from A to F)") == -1)
+        if (write_client(currentPlayer->sock, "It is your turn to play, pick a house please (from A to F), propose draw (T) or forfait (Q)") == -1)
         {
             game.end = (game.currentPlayer == 1 ? 2 : 1);
             break;

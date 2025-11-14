@@ -99,8 +99,12 @@ static void app(void)
          clients[actual] = c;
          actual++;
          buffer[0] = '\0';
-          i--;
-          continue;
+         i--;
+         if (write_client(csock, "Welcome, try /help to see what you can do.\n") == -1)
+         {
+            break;
+         }
+         continue;
       }
       else
       {
@@ -270,17 +274,16 @@ static void end_connection(int sock)
 
 int read_client(SOCKET sock, char *buffer)
 {
-    int n = recv(sock, buffer, BUF_SIZE - 1, 0);
+   int n = recv(sock, buffer, BUF_SIZE - 1, 0);
 
-    if (n <= 0)
-    {
-        return -1; // client déconnecté
-    }
+   if (n <= 0)
+   {
+      return -1; // client déconnecté
+   }
 
-    buffer[n] = '\0';
-    return n;
+   buffer[n] = '\0';
+   return n;
 }
-
 
 /* void write_client(SOCKET sock, const char *buffer)
 {
@@ -293,13 +296,12 @@ int read_client(SOCKET sock, char *buffer)
 
 int write_client(SOCKET sock, const char *buffer)
 {
-    if (send(sock, buffer, strlen(buffer), 0) <= 0)
-    {
-        return -1; // socket mort
-    }
-    return 0;
+   if (send(sock, buffer, strlen(buffer), 0) <= 0)
+   {
+      return -1; // socket mort
+   }
+   return 0;
 }
-
 
 void listUsers(char *response, Client *clients, Client client, int actual)
 {
